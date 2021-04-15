@@ -1,6 +1,6 @@
 ﻿namespace Schacklottning
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -59,7 +59,7 @@
             this.btnShowRound.Name = "btnShowRound";
             this.btnShowRound.Size = new System.Drawing.Size(136, 28);
             this.btnShowRound.TabIndex = 1;
-            this.btnShowRound.Text = "Rapportera resultat";
+            this.btnShowRound.Text = "Resultat senaste rond";
             this.btnShowRound.UseVisualStyleBackColor = true;
             this.btnShowRound.Click += new System.EventHandler(this.btnShowRound_Click);
             // 

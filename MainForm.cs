@@ -10,12 +10,14 @@ using System.Windows.Forms;
 
 namespace Schacklottning
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        //These are the autoritative sources on the most current info, ui elements and database should match but these break ties
+        //These are the authoritative sources on the most current info, ui elements and database should match but these break ties
         private List<Player> playerList;
         private const int StartElo = 1000;
         private List<Match> activeMatches;
+        private List<Match> allMatches;
+        private int currentRound = 0;
 
         public void AddPlayer(String firstname, String lastname)
         {
@@ -24,13 +26,14 @@ namespace Schacklottning
             playerList.Add(player);
             lstbPlayers.Items.Add(player);
             
-            //Modify database
+            //TODO: Modify database
         }
 
-        public Form1()
+        public MainForm()
         {
-            playerList = new List<Player>(); //Load from database
+            playerList = new List<Player>(); //TODO: Load from database
             activeMatches = new List<Match>();
+            allMatches = new List<Match>();
             InitializeComponent();
             AddPlayer("King", "Ghidorah");
             AddPlayer("MF", "DOOM");
@@ -45,9 +48,10 @@ namespace Schacklottning
 
         }
 
+        //Add new player button
         private void button1_Click(object sender, EventArgs e)
         {
-            Form2 addPlayerWindow = new Form2(this);
+            AddPlayerForm addPlayerWindow = new AddPlayerForm(this);
             addPlayerWindow.Show();
         }
 
@@ -56,14 +60,39 @@ namespace Schacklottning
 
         }
 
+        //Show active matches button
         private void btnShowRound_Click(object sender, EventArgs e)
         {
-
+            MatchListForm addPlayerWindow = new MatchListForm(activeMatches, this);
+            addPlayerWindow.Show();
         }
+
 
         private void btnNewRound_Click(object sender, EventArgs e)
         {
-            //TODO: Conform if active matches
+            //Kolla om senaste ronden är avslutad
+            bool activeMatch = false;
+            foreach(Match m in activeMatches)
+            {
+                if(m.Result == -1)
+                {
+                    activeMatch = true;
+                }
+            }
+            if (activeMatch)
+            {
+                System.Windows.MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Alla resultat är inte inmatade, vill du lotta ny rond ändå?", "Är du säker?", System.Windows.MessageBoxButton.YesNo);
+                if (messageBoxResult == System.Windows.MessageBoxResult.No)
+                {
+                    return;
+                }
+
+            }
+
+
+            //Start new round
+            currentRound++;
+
             activeMatches = new List<Match>();
             List<Player> activePlayersList = new List<Player>();
 
@@ -114,17 +143,19 @@ namespace Schacklottning
                 Console.WriteLine(d.black.ToString());
             }
 
-            Form3 addPlayerWindow = new Form3(draw, this);
+            MatchListForm addPlayerWindow = new MatchListForm(draw, this);
             addPlayerWindow.Show();
-
+            activeMatches = draw;
+            allMatches.AddRange(activeMatches);
 
 
 
         }
 
+        //The main matchmaking function, currently very simple.
         private List<Match> createValidMatching(List<int> umatchedNums, double[,] scores, Player[] activePlayers)
         {
-            //Remember to always add a bye player if odd
+            //TODO: Add bye
             if(umatchedNums.Count < 2)
             {
                 return new List<Match>();
@@ -166,7 +197,7 @@ namespace Schacklottning
                             curr = bestMatch;
                             bestMatch = t;
                         }
-                        output.Add(new Match(activePlayers[curr], activePlayers[bestMatch]));
+                        output.Add(new Match(activePlayers[curr], activePlayers[bestMatch],currentRound));
                     }
                 }
                 else
@@ -209,8 +240,10 @@ namespace Schacklottning
             }
         }
 
+        //Keeps lists in the UI updated by repopulating them, called after changes to scores, player list etc.
         public void UpdateLists()
         {
+            //Update total scores list
             playerList.Sort();
             playerList.Reverse();
             lstbResTot.Items.Clear();
@@ -218,6 +251,33 @@ namespace Schacklottning
             {
                 lstbResTot.Items.Add($"{p.score}   {p.ToString()}");
             }
+
+            //Update scores today list
+            List<double> scoresToday = new List<double>();
+            DateTime today = DateTime.Now.Date;
+            lstbResToday.Items.Clear();
+            foreach (Player p in playerList)
+            {
+                double scoreForP = 0;
+                foreach (Match m in p.matches)
+                {
+
+                    if (DateTime.Equals(m.timePlayed.Date, today))
+                    {
+                        if (m.Result != -1)
+                        {
+                            scoreForP += m.ScoreForPlayer(p);
+                        }
+
+                    }
+                }
+                scoresToday.Add(scoreForP);
+            }
+            for(int i = 0; i < scoresToday.Count; i++)
+            {
+                lstbResToday.Items.Add($"{scoresToday[i]}  {playerList[i].ToString()}");
+            }
+
         }
     }
 }

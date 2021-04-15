@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace Schacklottning
 {
-    public partial class Form2 : Form
+    public partial class AddPlayerForm : Form
     {
-        private Form1 form1;
-        public Form2(Form1 parent)
+        private MainForm form1;
+        public AddPlayerForm(MainForm parent)
         {
             InitializeComponent();
             form1 = parent;

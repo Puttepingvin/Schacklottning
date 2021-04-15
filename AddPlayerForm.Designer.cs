@@ -1,6 +1,6 @@
 ﻿namespace Schacklottning
 {
-    partial class Form2
+    partial class AddPlayerForm
     {
         /// <summary>
         /// Required designer variable.

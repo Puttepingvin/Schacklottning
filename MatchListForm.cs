@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 namespace Schacklottning
 {
-    public partial class Form3 : Form
+    public partial class MatchListForm : Form
     {
         private List<Match> matches;
         private List<TextBox> boxes;
-        Form1 mainWindow;
-        public Form3(object matches, Form1 opener)
+        MainForm mainWindow;
+        public MatchListForm(object matches, MainForm opener)
         {
             InitializeComponent();
             this.matches = (List<Match>)matches;
@@ -41,11 +41,18 @@ namespace Schacklottning
                 this.Controls.Add(lblName);
 
                 TextBox txtBox = new TextBox();
-                txtBox.Text = "";
                 txtBox.Width = 75;
                 txtBox.Location = new Point(boxX, currY);
                 txtBox.KeyDown += new KeyEventHandler((s, ev) => this.textBoxx_TextChanged(s, ev, 1));
                 txtBox.TextChanged += new EventHandler((s, ev) => this.textBox1_TextChanged(s, ev));
+                if(m.Result != -1)
+                {
+                    txtBox.Text = m.resToString();
+                }
+                else
+                {
+                    txtBox.Text = "";
+                }
                 this.Controls.Add(txtBox);
                 boxes.Add(txtBox);
 
@@ -65,28 +72,32 @@ namespace Schacklottning
 
         }
 
+        //These two eventhandlers make sure the textboxes have one of four values that are autofilled from the first character
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            
-            TextBox snd = (TextBox)sender;
-            if(lastKeyPressed.CompareTo("D1") == 0 || lastKeyPressed.CompareTo("NumPad1") == 0)
+            if(!(lastKeyPressed is null))
             {
-                snd.Text = "1-0";
+
+                TextBox snd = (TextBox)sender;
+                if(lastKeyPressed.CompareTo("D1") == 0 || lastKeyPressed.CompareTo("NumPad1") == 0)
+                {
+                    snd.Text = "1-0";
+                }
+                else if (lastKeyPressed.CompareTo("D0") == 0 || lastKeyPressed.CompareTo("NumPad0") == 0)
+                {
+                    snd.Text = "0-1";
+                }
+                else if (lastKeyPressed.CompareTo("R") == 0)
+                {
+                    snd.Text = "Remi";
+                }
+                else
+                {
+                    Console.WriteLine(lastKeyPressed);
+                    snd.Text = "";
+                }
             }
-            else if (lastKeyPressed.CompareTo("D0") == 0 || lastKeyPressed.CompareTo("NumPad0") == 0)
-            {
-                snd.Text = "0-1";
-            }
-            else if (lastKeyPressed.CompareTo("R") == 0)
-            {
-                snd.Text = "Remi";
-            }
-            else
-            {
-                Console.WriteLine(lastKeyPressed);
-                snd.Text = "";
-            }
-            
+
         }
         private void textBoxx_TextChanged(object sender, KeyEventArgs e,int n)
         {
@@ -94,6 +105,8 @@ namespace Schacklottning
         }
         private string lastKeyPressed;
 
+        //Sets the results in the match variables and returns to main windows
+        //All the score/elo logic happens in the match class on the set action
         private void btnOK_Click(object sender, EventArgs e)
         {
             for(int i = 0; i < boxes.Count; i++)
@@ -116,6 +129,7 @@ namespace Schacklottning
             this.Close();
         }
 
+        //This is a little hack to print something useful with minimal effort, placeholder
         private void btnPrint_Click(object sender, EventArgs e)
         {
             CaptureScreen();
@@ -136,6 +150,13 @@ namespace Schacklottning
             memoryImage = new Bitmap(s.Width, s.Height, myGraphics);
             Graphics memoryGraphics = Graphics.FromImage(memoryImage);
             memoryGraphics.CopyFromScreen(this.Location.X, this.Location.Y, 0, 0, s);
+        }
+
+        //Close without saving
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            mainWindow.Focus();
+            this.Close();
         }
     }
 }

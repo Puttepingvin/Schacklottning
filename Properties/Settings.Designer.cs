@@ -25,13 +25,37 @@ namespace Schacklottning.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Setting {
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public float scoreWin {
             get {
-                return ((string)(this["Setting"]));
+                return ((float)(this["scoreWin"]));
             }
             set {
-                this["Setting"] = value;
+                this["scoreWin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public float scoreLoss {
+            get {
+                return ((float)(this["scoreLoss"]));
+            }
+            set {
+                this["scoreLoss"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public float scoreDraw {
+            get {
+                return ((float)(this["scoreDraw"]));
+            }
+            set {
+                this["scoreDraw"] = value;
             }
         }
     }
